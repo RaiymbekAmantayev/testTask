@@ -32,19 +32,18 @@ const Login = async(req, res) => {
         }
 
         bcrypt.compare(password, user.password).then((match) => {
-            if (!match) {
-                return res.json({ error: "Wrong username and password combination" });
-            }
-            const accessToken = sign({ username: user.username, id: user.id },
-                "importantsecret")
-            return res.json(accessToken);
-        })
-
-
-        .catch((error) => {
-            console.error(error);
-            return res.json({ error: "Error comparing passwords" });
-        });
+                if (!match) {
+                    return res.json({ error: "Wrong username and password combination" });
+                }
+                const accessToken = sign({ username: user.username, id: user.id },
+                    "importantsecret")
+                return res.json(accessToken);
+            })
+            .catch((error) => {
+                console.error(error);
+                return res.json({ error: "Error comparing passwords" });
+            });
+        await ActionController.createAction(user.id, 'logged_in');
     } catch (error) {
         console.error(error);
         return res.json({ error: "Internal server error" });
@@ -55,10 +54,23 @@ const GetAll = async(req, res) => {
     res.send(users)
 }
 
+const GetById = async(req, res) => {
+    const id = req.params.id
+    try {
+        const user = await Users.findByPk(id)
+        res.send(user)
+        await ActionController.createAction(id, 'get_user');
+    } catch (err) {
+        res.status(404).send("user not found")
+    }
+}
+
 const ChangePassword = async(req, res) => {
     const { oldPassword, newPassword } = req.body;
     const user = await Users.findOne({ where: { username: req.user.username }, });
-
+    if (!user) {
+        res.json("Unauthorized")
+    }
     bcrypt.compare(oldPassword, user.password).then((match) => {
         if (!match) {
             return res.json({ error: "Wrong password" });
@@ -68,6 +80,7 @@ const ChangePassword = async(req, res) => {
             res.json("Success")
         })
     })
+    await ActionController.createAction(user.id, 'change_Paswword');
 }
 
 
@@ -85,7 +98,7 @@ const UpdateUser = async(req, res) => {
         await Users.update(newUser, {
             where: { id: id }
         })
-        await ActionController.createAction(id, 'update');
+        await ActionController.createAction(id, 'update_username');
         res.send("Пользователь успешно обновлен")
     } catch (error) {
         res.status(500).send({ message: "Произошла ошибка при обновлении поста", error: error.message });
@@ -99,5 +112,6 @@ module.exports = {
     Login,
     GetAll,
     UpdateUser,
-    ChangePassword
+    ChangePassword,
+    GetById
 }
