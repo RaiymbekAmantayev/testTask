@@ -3,7 +3,7 @@
 
 ## Установка
 
-1. Склонируйте репозиторий с проектом:https://github.com/RaiymbekAmantayev/testTask
+1. Склонируйте репозиторий с проектом:git clone https://github.com/RaiymbekAmantayev/testTask
 
 
 ## Запуск
