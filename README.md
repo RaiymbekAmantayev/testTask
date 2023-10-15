@@ -31,7 +31,8 @@ http://localhost:3001/api/users/auth/login
 
 // Получить всех пользователей
 http://localhost:3001/api/users/auth/getall
-
+ // Получение одого пользователя
+http://localhost:3001/api/users/auth/get/:id
  //изменение юзернейм пользователя
 http://localhost:3001/api/users/auth/update/:id
 
